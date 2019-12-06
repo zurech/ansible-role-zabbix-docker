@@ -1,0 +1,48 @@
+---
+
+- name: Create zabbix-server installation directory
+  file:
+    path: /opt/zabbix-server
+    state: directory
+    owner: "{{ ansible_ssh_user }}"
+    group: "{{ ansible_ssh_user }}"
+    mode: "u=rwxr,g=xr,o=x"
+
+- name: Copy zabbix-server files
+  template:
+    src: "{{ item }}"
+    dest: /opt/zabbix-server/
+    owner: "{{ ansible_ssh_user }}"
+    group: "{{ ansible_ssh_user }}"
+  with_items:
+    - docker-compose.yml
+
+- name: Make sure a Docker is running
+  systemd:
+    state: started
+    name: docker
+
+- name: Pull docker images
+  docker_image:
+    name: "{{ item }}"
+    source: pull
+  with_items:
+    - postgres:latest
+    - prodrigestivill/postgres-backup-local:11
+    - zabbix/zabbix-server-pgsql:ubuntu-latest
+    - zabbix/zabbix-web-nginx-pgsql:ubuntu-latest
+    - zabbix/zabbix-agent:latest
+    - adminer:latest
+    - monitoringartist/grafana-xxl:latest
+
+- name: Init a new swarm with default parameters
+  docker_swarm:
+    advertise_addr: "{{ ansible_host }}"
+    state: present
+
+- name: Deploy stack from a compose file
+  docker_stack:
+    state: present
+    name: zabbix-server
+    compose:
+      - /opt/zabbix-server/docker-compose.yml
