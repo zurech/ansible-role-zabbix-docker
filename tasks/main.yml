@@ -8,6 +8,14 @@
     group: "{{ ansible_ssh_user }}"
     mode: "u=rwxr,g=xr,o=x"
 
+- name: Create database backups directory
+  file:
+    path: /opt/zabbix-server/backups
+    state: directory
+    owner: "{{ ansible_ssh_user }}"
+    group: "{{ ansible_ssh_user }}"
+    mode: "u=rwxr,g=xr,o=x"
+
 - name: Copy zabbix-server files
   template:
     src: "{{ item }}"
