@@ -19,11 +19,11 @@
 - name: Copy zabbix-server files
   template:
     src: "{{ item }}"
-    dest: /opt/zabbix-server/
+    dest: /opt/zabbix-server/docker-compose.yml
     owner: "{{ ansible_ssh_user }}"
     group: "{{ ansible_ssh_user }}"
   with_items:
-    - docker-compose.yml
+    - docker-compose.yml.j2
 
 - name: Make sure a Docker is running
   systemd:
@@ -35,8 +35,8 @@
     name: "{{ item }}"
     source: pull
   with_items:
-    - postgres:latest
-    - prodrigestivill/postgres-backup-local:11
+    - postgres:12
+    - prodrigestivill/postgres-backup-local:12
     - zabbix/zabbix-server-pgsql:ubuntu-latest
     - zabbix/zabbix-web-nginx-pgsql:ubuntu-latest
     - zabbix/zabbix-agent:latest
