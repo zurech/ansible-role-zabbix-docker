@@ -16,7 +16,7 @@ services:
     volumes:  # Volume for Database
       - zabbix_pgdata:/var/lib/postgresql/data/
   pgbackups:
-    image: prodrigestivill/postgres-backup-local:11
+    image: prodrigestivill/postgres-backup-local:12
     deploy:
       restart_policy:
         condition: any
