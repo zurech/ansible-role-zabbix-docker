@@ -73,6 +73,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD:-zabbix}
       POSTGRES_DB: ${POSTGRES_DB:-zabbix}
       ZBX_SERVER_HOST: zabbix-server  # Zabbix related and Php variables
+      ZBX_SERVER_NAME: {{ zbx_server_name }}
       ZBX_POSTMAXSIZE: 64M
       PHP_TZ: ${TIMEZONE:-America/Argentina/Cordoba}  
       ZBX_MAXEXECUTIONTIME: 500
