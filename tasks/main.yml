@@ -34,14 +34,7 @@
   docker_image:
     name: "{{ item }}"
     source: pull
-  with_items:
-    - postgres:12
-    - prodrigestivill/postgres-backup-local:12
-    - zabbix/zabbix-server-pgsql:ubuntu-latest
-    - zabbix/zabbix-web-nginx-pgsql:ubuntu-latest
-    - zabbix/zabbix-agent:latest
-    - adminer:latest
-    - monitoringartist/grafana-xxl:latest
+  with_items: "{{ docker_images }}"
 
 - name: Init a new swarm with default parameters
   docker_swarm:
@@ -54,3 +47,11 @@
     name: zabbix-server
     compose:
       - /opt/zabbix-server/docker-compose.yml
+  environment:
+    MAIL_PASSWD: "{{ MAIL_PASSWORD }}"
+    MAIL_USER: "{{ MAIL_USER }}"
+    MAIL_FROM: "{{ MAIL_FROM }}"
+    MAIL_TO: "{{ MAIL_TO }}"
+    POSTGRES_DB: "{{ POSTGRES_DB }}"
+    DB_USERNAME: "{{ DB_USERNAME }}"
+    DB_PASSWORD: "{{ DB_PASSWORD }}"

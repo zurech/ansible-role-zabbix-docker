@@ -1,7 +1,7 @@
 version: '3.7'
 services:
   postgres-server:    # The Postgres Database Service
-    image: postgres:12
+    image: {{ docker_images[0] }}
     deploy:
       restart_policy:
         condition: any
@@ -16,7 +16,7 @@ services:
     volumes:  # Volume for Database
       - zabbix_pgdata:/var/lib/postgresql/data/
   pgbackups:
-    image: prodrigestivill/postgres-backup-local:12
+    image: {{ docker_images[1] }}
     deploy:
       restart_policy:
         condition: any
@@ -33,14 +33,22 @@ services:
       - POSTGRES_USER=${DB_USERNAME:-zabbix}
       - POSTGRES_PASSWORD=${DB_PASSWORD:-zabbix}
       - POSTGRES_EXTRA_OPTS=-Z9 --schema=public --blobs
-      - SCHEDULE=@daily
+      - SCHEDULE= @daily
       - BACKUP_KEEP_DAYS=7
       - BACKUP_KEEP_WEEKS=4
       - BACKUP_KEEP_MONTHS=6
       - HEALTHCHECK_PORT=80
+      - MAIL_BACKUP={{ MAIL_BACKUP }}
+      - SMTP_SERVER={{ SMTP_SERVER }}
+      - SMTP_PORT={{ SMTP_PORT }}
+      - MAIL_USER=${MAIL_USER:-**None**}
+      - MAIL_PASSWORD=${MAIL_PASSWD:-**None**}
+      - MAIL_FROM=${MAIL_FROM:-**None**}
+      - MAIL_TO=${MAIL_TO:-**None**}
+      - MAIL_SUBJECT={{ MAIL_SUBJECT }}
 
   zabbix-server:     # The main Zabbix Server Software Service
-    image: zabbix/zabbix-server-pgsql:ubuntu-latest
+    image: {{ docker_images[2] }}
     deploy:
       restart_policy:
         condition: any
@@ -61,7 +69,7 @@ services:
       - zabbix_alertscripts:/usr/lib/zabbix/alertscripts
   
   zabbix-web:    # The main Zabbix web UI or interface 
-    image: zabbix/zabbix-web-nginx-pgsql:ubuntu-latest
+    image: {{ docker_images[3] }}
     deploy:
       restart_policy:
         condition: any
@@ -83,7 +91,7 @@ services:
     ports:    # Port where Zabbix UI is available
       - 80:80
   zabbix-agent:   # Zabbix agent service that tracks usage and send to zabbix server
-    image: zabbix/zabbix-agent:latest
+    image: {{ docker_images[4] }}
     privileged: true   # Access mode for allowing resource access
     network_mode: "host"
     deploy:
@@ -95,7 +103,7 @@ services:
     environment:
       - ZBX_SERVER_HOST=zabbix-server # The IP/Dns of Zabbix server
   adminer:  # Optional for accessing databases
-    image: adminer:latest
+    image: {{ docker_images[5] }}
     deploy:
       restart_policy:
         condition: any
@@ -105,7 +113,7 @@ services:
     ports:
       - 8090:8080
   grafana-xxl:  # Optional more functional and creative UI 
-    image: monitoringartist/grafana-xxl:latest
+    image: {{ docker_images[6] }}
     ports:
      - 3000:3000
 volumes:
