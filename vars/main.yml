@@ -1,1 +1,9 @@
 ---
+docker_images:
+  - postgres:12
+  - zurech/docker-postgres-backup-local:12
+  - zabbix/zabbix-server-pgsql:ubuntu-latest
+  - zabbix/zabbix-web-nginx-pgsql:ubuntu-latest
+  - zabbix/zabbix-agent:latest
+  - adminer:latest
+  - monitoringartist/grafana-xxl:latest
