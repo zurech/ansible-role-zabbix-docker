@@ -93,7 +93,6 @@ services:
   zabbix-agent:   # Zabbix agent service that tracks usage and send to zabbix server
     image: {{ docker_images[4] }}
     privileged: true   # Access mode for allowing resource access
-    network_mode: "host"
     deploy:
       restart_policy:
         condition: any
@@ -102,6 +101,9 @@ services:
         window: 120s
     environment:
       - ZBX_SERVER_HOST=zabbix-server # The IP/Dns of Zabbix server
+      - ZBX_HOSTNAME=zabbix-agent
+      - ZBX_PASSIVESERVERS=0.0.0.0/0
+      - ZBX_ACTIVE_ALLOW=false
   adminer:  # Optional for accessing databases
     image: {{ docker_images[5] }}
     deploy:
